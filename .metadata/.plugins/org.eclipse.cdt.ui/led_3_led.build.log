@@ -1,0 +1,6 @@
+10:48:49 **** Incremental Build of configuration Default for project led_3_led ****
+make all 
+make: Nothing to be done for 'all'.
+
+10:48:49 Build Finished. 0 errors, 0 warnings. (took 315ms)
+

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<item key="hasShownOverlayPopupBefore" value="true"/>
+	<section name="java.lang.Class">
+		<item key="replaceBarOpen" value="true"/>
+		<list key="findhistory">
+			<item value="1000000"/>
+			<item value="1000000/4"/>
+		</list>
+		<list key="replacehistory">
+			<item value="1000000/4"/>
+			<item value="1000000"/>
+		</list>
+	</section>
+</section>

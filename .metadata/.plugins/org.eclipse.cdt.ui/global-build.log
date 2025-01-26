@@ -1,0 +1,13 @@
+10:48:30 **** Build of configuration Default for project led_3_led ****
+make all 
+  CC	main.c
+  CC	systick.c
+  GENLNK  stm32l152re
+  LD	led3_led.elf
+  OBJCOPY	led3_led.bin
+10:48:40 **** Incremental Build of configuration Default for project led_3_led ****
+make all 
+make: Nothing to be done for 'all'.
+10:48:49 **** Incremental Build of configuration Default for project led_3_led ****
+make all 
+make: Nothing to be done for 'all'.

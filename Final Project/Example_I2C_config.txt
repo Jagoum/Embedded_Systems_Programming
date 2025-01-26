@@ -1,0 +1,87 @@
+# this is for the configuaration of i2c
+
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
+#include <libopencm3/stm32/i2c.h>
+#include <libopencm3/stm32/usart.h>
+#include <libopencm3/cm3/nvic.h>
+#include <libopencm3/cm3/systick.h>
+#include <stdint.h>
+#include <string.h>
+
+// Define the TMP102 address
+#define TMP102_ADDR 0x48
+
+// Define the temperature register address
+#define TMP102_TEMP_REG 0x00
+
+int main(void)
+{
+    // Initialize the clock
+    rcc_periph_clock_enable(RCC_GPIOA);
+    rcc_periph_clock_enable(RCC_GPIOB);
+    rcc_periph_clock_enable(RCC_I2C1);
+    rcc_periph_clock_enable(RCC_USART2);
+
+    // Configure the I2C pins
+    gpio_mode_setup(GPIOB, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO9 | GPIO10);
+    gpio_set_af(GPIOB, GPIO_AF4, GPIO9 | GPIO10);
+
+    // Configure the USART pins
+    gpio_mode_setup(GPIOA, GPIO_MODE_AF, GPIO_PUPD_NONE, GPIO2 | GPIO3);
+    gpio_set_af(GPIOA, GPIO_AF7, GPIO2 | GPIO3);
+
+    // Initialize the I2C interface
+    i2c_peripheral_disable(I2C1);
+    i2c_reset(I2C1);
+    i2c_set_speed(I2C1, i2c_speed_sm, 400000);
+    i2c_peripheral_enable(I2C1);
+    i2c_enable_ack(I2C1);
+
+    // Initialize the USART interface
+    usart_set_baudrate(USART2, 115200);
+    usart_set_databits(USART2, 8);
+    usart_set_stopbits(USART2, USART_STOPBITS_1);
+    usart_set_parity(USART2, USART_PARITY_NONE);
+    usart_set_mode(USART2, USART_MODE_TX | USART_MODE_RX);
+    usart_enable(USART2);
+
+    while (1)
+    {
+        uint8_t buf[2];
+
+        // Start the I2C transmission
+        i2c_start(I2C1);
+        i2c_master_send(I2C1, (TMP102_ADDR << 1) | 0);
+        i2c_master_send(I2C1, TMP102_TEMP_REG);
+        i2c_start(I2C1);
+        i2c_master_send(I2C1, (TMP102_ADDR << 1) | 1);
+
+        // Read the temperature data
+        i2c_master_recv(I2C1, buf, 2);
+
+        // Stop the I2C transmission
+        i2c_stop(I2C1);
+
+        // Convert the temperature data to Celsius
+        int16_t temp = (buf[0] << 4) | (buf[1] >> 4);
+        float temperature = (temp * 0.0625);
+
+        // Send the temperature to the terminal
+        char tempStr[20];
+        sprintf(tempStr, "Temperature: %.2f C\r\n", temperature);
+        for (int i = 0; i < strlen(tempStr); i++)
+        {
+            usart_send_blocking(USART2, tempStr[i]);
+        }
+
+        // Delay for 1 second
+        for (int i = 0; i < 1000000; i++)
+        {
+            // Do nothing
+        }
+    }
+
+    return 0;
+}
+

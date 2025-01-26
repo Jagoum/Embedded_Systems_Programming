@@ -1,0 +1,116 @@
+
+#define RCC_BASE (0x40023800UL)
+#define AHBENR_OFFSET (0x1CUL)
+
+
+// Acces au contenu du registre
+
+
+#define RCC_AHBENR 		*(volatile unsigned long*)(RCC_BASE + AHBENR_OFFSET)
+
+#define GPIOA_BASE 			(0x40020000UL)
+#define GPIO_MODE_OFFSET 	(0x00UL)
+#define GPIO_ODR_OFFSET 	(0x14UL)
+#define GPIO_BSSR_OFFSET 	(0x18UL)
+
+#define GPIO_ODR 		*(volatile unsigned long*)(GPIOA_BASE + GPIO_ODR_OFFSET)
+#define GPIO_MODER 		*(volatile unsigned long*)(GPIOA_BASE + GPIO_MODE_OFFSET)
+#define GPIO_BSSR 		*(volatile unsigned long*)(GPIOA_BASE + GPIO_BSSR_OFFSET)
+
+/*
+ *
+ * 1. Activer le peripherique --> RCC
+ * 2. Configurer (Input / Output)
+ * 3. Ecrire la valeur souhaitee
+ *
+ * */
+
+
+int main(void){
+
+
+	RCC_AHBENR |= (1 << 0);
+
+	// Mode register
+	GPIO_MODER |= (1 << 10);
+	GPIO_MODER &= ~(1 << 11);
+
+	// Mode register at PA6
+
+	GPIO_MODER |= (1<<12);
+	GPIO_MODER &= ~(1<<13);
+
+	// mode register at PA7
+
+	GPIO_MODER |= (1<<14);
+	GPIO_MODER &= ~(1<<15);
+
+	// mode register at PA11
+
+	GPIO_MODER |= (1<<22);
+	GPIO_MODER &= ~(1<<23);
+
+
+	int i;
+
+	//this is an infinite loop
+
+	while (1){
+		GPIO_BSSR |= (1 << 21);
+
+
+		GPIO_BSSR |= (1 << 5);
+		for(i = 0; i < 1000000/2; i++)
+		{
+			__asm__("nop");
+		}
+
+		GPIO_BSSR |= (1 << 21);
+		for(i = 0; i < 1000000/2; i++)
+		{
+			__asm__("nop");
+		}
+
+
+
+		GPIO_BSSR |= (1 << 6);
+		for(i = 0; i < 1000000/2; i++)
+		{
+			__asm__("nop");
+		}
+
+		GPIO_BSSR |= (1 << 22);
+		for(i = 0; i < 1000000/2; i++)
+		{
+			__asm__("nop");
+		}
+
+		GPIO_BSSR |= (1 << 7);
+
+		for(i = 0; i < 1000000/2; i++)
+		{
+			__asm__("nop");
+		}
+		GPIO_BSSR |= (1 << 23);
+
+		for(i = 0; i < 1000000/2; i++)
+		{
+			__asm__("nop");
+		}
+
+		GPIO_BSSR |= (1 << 11);
+
+		for(i = 0; i < 1000000/2; i++)
+		{
+			__asm__("nop");
+		}
+
+		GPIO_BSSR |= (1 << 27);
+		for(i = 0; i < 1000000/2; i++)
+		{
+			__asm__("nop");
+		}
+	}
+	return 0;
+}
+
